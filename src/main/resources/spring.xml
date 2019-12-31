@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context" 
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx" 
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx-4.2.xsd"> 
+       
+      <!-- 注解扫描器，扫描每一层 -->
+      <context:component-scan base-package="com.bawei"/>
+      <!-- 加载外部资源文件 -->
+      <context:property-placeholder location="classpath:db.properties"/>
+	  <!-- 配置数据源 -->
+	  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	  	<property name="driverClassName"     value="${db.driverClassName}"></property>
+	  	<property name="url"                 value="${db.url}"></property>
+	  	<property name="username"            value="${db.username}"></property>
+	  	<property name="password"            value="${db.password}"></property>
+	  </bean>
+	  
+	  <!-- 配置sqlSessionFactory -->
+	  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  	<property name="dataSource" ref="dataSource"></property>
+	  	<!-- 加载mybatis核心配置文件 -->
+	  	<property name="configLocation" value="classpath:mybatis.xml"></property>
+	  	<!-- 设置实体类的别名 -->
+	  	<property name="typeAliasesPackage" value="com.bawei.entity"></property>
+	  </bean>
+	  <!-- 扫描dao层包，动态的创建接口的实现类 -->
+	  <bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	  		<property name="basePackage" value="com.bawei.dao"></property>
+	  		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	  		
+	  </bean>
+	  <!-- 配置事务 -->
+	  <!-- 事务管理器 -->
+	  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	  		<property name="dataSource" ref="dataSource"></property>
+	  </bean>
+		<!-- 声明式事务：通过标签实现 -->
+		<!-- 注册AOP -->
+		<!--
+			<aop:config>
+				<aop:pointcut expression="execution(* com.xwx.service.*.*(..))" id="pc"/>
+				<aop:advisor advice-ref="advice" pointcut-ref="pc"/>
+			</aop:config>
+		-->
+		<!-- 配置事务通知 -->
+		<!-- 
+			<tx:advice id="advice" transaction-manager="transactionManager">
+				<tx:attributes>
+					<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+					<tx:method name="upd*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+					<tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+					<tx:method name="*"    read-only="true"/>
+				</tx:attributes>
+			</tx:advice>
+		 -->
+		
+		<!-- 注解式事务：开启事务注解 -->
+	  <tx:annotation-driven transaction-manager="transactionManager"/>
+		
+</beans>

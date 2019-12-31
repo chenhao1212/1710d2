@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间的值为dao层接口的权限定名 -->
+<mapper namespace="com.bawei.dao.GoodsDao">
+	<select id="queryAll" resultMap="goodsMap">
+		select * from tb_goods g join tb_brand b on g.bid = b.bid join tb_goodskind s on g.sid = s.sid
+		<where>
+			<if test="gname!=null and gname!=''">
+				and gname like '%${gname}%'
+			</if>
+		</where>
+	</select>
+	<resultMap type="Goods" id="goodsMap">
+		<id property="gid" column="gid"/>
+		<result property="gname" column="gname"/>
+		<result property="size" column="size"/>
+		<result property="price" column="price"/>
+		<result property="count" column="count"/>
+		<result property="lable" column="lable"/>
+		<result property="image" column="image"/>
+		<association property="brand" javaType="Brand">
+			<id column="bid" property="bid"/>
+			<result column="bname" property="bname"/>
+		</association>
+		<association property="skind" javaType="skind">
+			<id property="sid" column="sid"/>
+			<result property="sname" column="sname"/>
+		</association>
+	</resultMap>
+	
+	<select id="queryAllBrand" resultType="Brand">
+		select * from tb_brand
+	</select>
+	<select id="queryAllSkind" resultType="Skind">
+		select * from tb_goodskind
+	</select>
+	
+	<insert id="addGoods" useGeneratedKeys="true" keyProperty="gid">
+		insert into tb_goods value(null,#{gname},#{size},#{price},#{count},#{lable},#{image},#{brand.bid},#{skind.sid});
+	</insert>
+	
+	<select id="queryOneGood" resultMap="goodsMap">
+		select * from tb_goods g join tb_brand b on g.bid = b.bid join tb_goodskind s on g.sid = s.sid where gid=#{gid}
+	</select>
+	
+	<delete id="deleteAll">
+		delete from tb_goods where gid in 
+		<foreach collection="gidarray" close=")" open="(" separator="," item="gid">
+			#{gid}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteOne">
+		delete from tb_goods where gid = #{gid}
+	</delete>
+	
+	<update id="updateOneGood">
+		update tb_goods set gname = #{gname},size=#{size},price=#{price},count=#{count},lable=#{lable},image=#{image},bid=#{brand.bid},sid=#{skind.sid} where gid =#{gid}
+	</update>
+</mapper>

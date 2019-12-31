@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context" 
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx" 
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd"> 
+
+	<!-- 注解扫描器 -->
+	<context:component-scan base-package="com.bawei.controller" />
+	<!-- 启动mvc驱动 -->
+	<mvc:annotation-driven/>
+	<!-- 配置视图解析器 -->
+	<bean  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<!-- 文件解析器 -->
+	
+	 <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">   
+       <!--  指定所上传文件的总大小不能超过200KB。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和    -->
+        <property name="maxUploadSize" value="104857600"/>   
+        <property name="maxInMemorySize" value="2048"/>  <!--  读取文件到内存中最大的字节数 -->
+        <property name="defaultEncoding" value="UTF-8"/>   <!-- 默认编码 -->
+    </bean> 
+	  <!-- 自定义拦截器 -->
+    <!-- <mvc:interceptors>
+    	<mvc:interceptor>
+    		拦截的请求地址
+    		<mvc:mapping path="/**"/>
+    		设置放行地址
+    		<mvc:exclude-mapping path="/login.do"/>
+    		自定义的拦截器的类
+    		<bean class="com.xwx.interceptor.MyInterceptor"></bean>
+    	</mvc:interceptor>
+    </mvc:interceptors>  -->
+	
+</beans>
